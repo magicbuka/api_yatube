@@ -14,6 +14,12 @@ class Group(models.Model):
 
 
 class Post(models.Model):
+    MESSAGE_FORM = (
+        'Дата публикации: {}, '
+        'автор: {}, '
+        'группа: {}, '
+        'пост: {:.15}.'
+    )
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
@@ -25,12 +31,17 @@ class Post(models.Model):
         upload_to='posts/', null=True, blank=True
     )  # поле для картинки
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE,
+        Group, on_delete=models.SET_NULL,
         related_name="posts", blank=True, null=True
     )
 
     def __str__(self):
-        return self.text
+        return self.MESSAGE_FORM.format(
+            self.pub_date,
+            self.author.username,
+            self.group,
+            self.text
+        )
 
 
 class Comment(models.Model):
